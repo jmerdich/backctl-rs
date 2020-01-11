@@ -1,15 +1,15 @@
 //! Quick and simple backlight control using udev
 
-extern crate udev;
 extern crate clap;
+extern crate udev;
 #[macro_use]
 extern crate error_chain;
 
 use clap::{App, Arg};
 
-use std::{fs, io, num};
-use std::io::{Write, Read};
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
+use std::{fs, io, num};
 
 error_chain! {
     foreign_links {
@@ -25,7 +25,9 @@ struct Backlight {
 
 impl Backlight {
     fn new(path: &Path) -> Self {
-        Backlight { root: PathBuf::from(path) }
+        Backlight {
+            root: PathBuf::from(path),
+        }
     }
 
     fn read_value(&self, property: &Path) -> Result<u32> {
@@ -97,7 +99,11 @@ impl Update {
         Ok(res)
     }
     fn new(relative: bool, valstr: &str) -> Result<Self> {
-        Ok(Update { relative, percent: valstr.contains('%'),  value: valstr.trim().trim_end_matches('%').parse()? })
+        Ok(Update {
+            relative,
+            percent: valstr.contains('%'),
+            value: valstr.trim().trim_end_matches('%').parse()?,
+        })
     }
 
     fn apply(&self, backlight: Backlight) -> Result<Backlight> {
@@ -123,7 +129,8 @@ impl Update {
             value = 0;
         }
 
-        backlight.set_brightness(value as u32)
+        backlight
+            .set_brightness(value as u32)
             .and_then(|()| Ok(backlight))
     }
 }
@@ -132,14 +139,15 @@ fn main() {
     let matches = App::new("Backlight Control")
         .author("Kevin Cuzner <kevin@kevincuzner.com>")
         .about("Sets the backlight brightness through sysfs")
-        .arg(Arg::with_name("CMD")
-             .required(true)
-             .takes_value(true)
-             .possible_value("inc")
-             .possible_value("dec")
-             .possible_value("set"))
-        .arg(Arg::with_name("VALUE")
-             .required(true))
+        .arg(
+            Arg::with_name("CMD")
+                .required(true)
+                .takes_value(true)
+                .possible_value("inc")
+                .possible_value("dec")
+                .possible_value("set"),
+        )
+        .arg(Arg::with_name("VALUE").required(true))
         .get_matches();
 
     let cmdstr = matches.value_of("CMD").expect("No command supplied");
