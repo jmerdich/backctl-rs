@@ -5,7 +5,7 @@ extern crate clap;
 #[macro_use]
 extern crate error_chain;
 
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg};
 
 use std::{fs, io, num};
 use std::io::{Write, Read};
