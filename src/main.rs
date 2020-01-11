@@ -97,7 +97,7 @@ impl Update {
         Ok(res)
     }
     fn new(relative: bool, valstr: &str) -> Result<Self> {
-        Ok(Update { relative: relative, percent: valstr.contains('%'),  value: valstr.trim().trim_end_matches('%').parse()? })
+        Ok(Update { relative, percent: valstr.contains('%'),  value: valstr.trim().trim_end_matches('%').parse()? })
     }
 
     fn apply(&self, backlight: Backlight) -> Result<Backlight> {
@@ -145,7 +145,7 @@ fn main() {
     let cmdstr = matches.value_of("CMD").expect("No command supplied");
     let valstr = matches.value_of("VALUE").expect("No value supplied");
 
-    let update = match cmdstr.as_ref() {
+    let update = match cmdstr {
         "inc" => Update::inc(&valstr).expect("Unable to create increment update"),
         "dec" => Update::dec(&valstr).expect("Unable to create decrement update"),
         "set" => Update::set(&valstr).expect("Unable to create set update"),
